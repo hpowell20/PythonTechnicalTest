@@ -14,7 +14,7 @@ which is used to find the corresponding `Legal Name` of the entity which issued 
 
 1. Ensure the prerequisites are installed
     ```
-    - Python3.8 (as testes)
+    - Python3.8 (as tested)
     - pip (tool for installing Python packages)
         - curl https://bootstrap.pypa.io/get-pip.py | python3.8
     ```
