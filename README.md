@@ -1,57 +1,108 @@
 # Origin Markets Backend Test
 
-### Spec:
+### Overview
 
-We would like you to implement an api to: ingest some data representing bonds, query an external api for some additional data, store the result, and make the resulting data queryable via api.
-- Fork this hello world repo leveraging Django & Django Rest Framework. (If you wish to use something else like flask that's fine too.)
-- Please pick and use a form of authentication, so that each user will only see their own data. ([DRF Auth Options](https://www.django-rest-framework.org/api-guide/authentication/#api-reference))
-- We are missing some data! Each bond will have a `lei` field (Legal Entity Identifier). Please use the [GLEIF API](https://www.gleif.org/en/lei-data/gleif-lei-look-up-api/access-the-api) to find the corresponding `Legal Name` of the entity which issued the bond.
-- If you are using a database, SQLite is sufficient.
-- Please test any additional logic you add.
+This project contains the application used for ingesting data 
+representing bonds and making the information queryable through an API.
 
-#### Project Quickstart
+Additional information for items being created comes from a call to the 
+[GLEIF API](https://www.gleif.org/en/lei-data/gleif-lei-look-up-api/access-the-api) 
+which is used to find the corresponding `Legal Name` of the entity which issued the bond.
 
-Inside a virtual environment running Python 3:
-- `pip install -r requirement.txt`
-- `./manage.py runserver` to run server.
-- `./manage.py test` to run tests.
 
-#### API
+## Setup
 
-We should be able to send a request to:
+1. Ensure the prerequisites are installed
+    ```
+    - Python3.8 (as testes)
+    - pip (tool for installing Python packages)
+        - curl https://bootstrap.pypa.io/get-pip.py | python3.8
+    ```
 
-`POST /bonds/`
+2. Create virtual env for python3 inside project directory:
+    ```
+    python3 -m venv venv 
+    ```
 
-to create a "bond" with data that looks like:
-~~~
-{
-    "isin": "FR0000131104",
-    "size": 100000000,
-    "currency": "EUR",
-    "maturity": "2025-02-28",
-    "lei": "R0MUWSFPU8MPRO8K5P83"
-}
-~~~
----
-We should be able to send a request to:
+3. Activate newly created environment
+    ```
+    . venv/bin/activate (Linux/OSX)
+    venv\Scripts\activate.bat (Windows)
+    ```
 
-`GET /bonds/`
+4. Install the required python packages
+    ```
+    pip install -r requirements.txt
+    ```
 
-to see something like:
-~~~
-[
-    {
-        "isin": "FR0000131104",
-        "size": 100000000,
-        "currency": "EUR",
-        "maturity": "2025-02-28",
-        "lei": "R0MUWSFPU8MPRO8K5P83",
-        "legal_name": "BNPPARIBAS"
-    },
-    ...
-]
-~~~
-We would also like to be able to add a filter such as:
-`GET /bonds/?legal_name=BNPPARIBAS`
+5. Change into the project directory
+    ```
+    cd origin
+    ```
 
-to reduce down the results.
+6. Setup the database
+    ```
+   ./manage.py migrate
+    ```
+
+7. Create an initial user
+    ```
+   ./manage.py createsuperuser
+    ```
+   
+ ## Run Project
+
+Once the packages have been installed the project can be run by issuing the following command:
+ ```
+ ./manage.py runserver
+ ```
+
+### API Usage
+
+#### Obtaining an authentication token
+
+User authentication is performed using JSOM JWT web tokens.
+
+1. Obtain the access token
+    ```
+    POST http://localhost:8000/api/token/
+        Request body parameters
+        {
+            "username": username,
+            "password": password
+        }
+    ```
+2. Include the access token in the request
+    ```
+    Copy the result from the 'access' field
+    Add Authentication header in the format 'Token {access_token}'
+    ```
+
+#### Endpoints
+
+There are two endpoints in this project
+* GET /bonds?legal_name={LEGAL_NAME}
+    * LEGAL_NAME - filters by specified legal name
+* POST /bonds/
+    * Request body parameters:
+         ```
+        {
+            "isin": "FR0000131104",
+            "size": 100000000,
+            "currency": "EUR",
+            "maturity": "2025-02-28",
+            "lei": "R0MUWSFPU8MPRO8K5P83"
+        }
+        ```
+
+ ## Unit Tests
+
+Tests can be invoked using the command:
+ ```
+ ./manage.py test
+ ```
+
+NOTES:
+* In addition to running the tests code coverage reports are being generated:
+    * These can be found in the **cover** directory
+    * Comment the line ```'--with-coverage',``` in the setting.py file to turn off coverage generation
