@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from .errors import LegalNameLookupError
 from .models import Bond
 from .utils import get_lei_legal_name
 
@@ -16,7 +17,7 @@ class BondWriteSerializer(serializers.HyperlinkedModelSerializer):
         try:
             data['legal_name'] = get_lei_legal_name(data['lei'])
             return data
-        except Exception as e:
+        except LegalNameLookupError as e:
             error = {'lei': [e]}
             raise serializers.ValidationError(error)
 

@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from .errors import LegalNameLookupError
 from .utils import get_lei_legal_name
 
 
@@ -19,7 +20,7 @@ class Bond(models.Model):
     def clean(self):
         try:
             self.legal_name = get_lei_legal_name(self.lei)
-        except Exception as e:
+        except LegalNameLookupError as e:
             raise ValidationError({'lei': [e]})
 
     class Meta:
