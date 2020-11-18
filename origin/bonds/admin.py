@@ -9,11 +9,11 @@ class BondAdmin(admin.ModelAdmin):
         return False
 
     fieldsets = (
-        (_('Details'), {'fields': ('lei', 'legal_name', 'isin', 'size', 'currency', 'maturity')}),
+        (_('Details'), {'fields': ('user', 'lei', 'legal_name', 'isin', 'size', 'currency', 'maturity')}),
     )
     readonly_fields = ('legal_name',)
     list_filter = ('legal_name',)
-    list_display = ('lei', 'legal_name', 'isin', 'size', 'currency', 'maturity',)
+    list_display = ('user', 'lei', 'legal_name', 'isin', 'size', 'currency', 'maturity',)
 
 
 admin.site.register(Bond, BondAdmin)
