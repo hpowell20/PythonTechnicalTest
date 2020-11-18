@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import Bond
@@ -9,6 +10,8 @@ class BondWriteSerializer(serializers.HyperlinkedModelSerializer):
     Serializer used to save the record
     """
 
+    user = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+
     def validate(self, data):
         try:
             data['legal_name'] = get_lei_legal_name(data['lei'])
@@ -19,7 +22,7 @@ class BondWriteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Bond
-        fields = ('lei', 'isin', 'size', 'currency', 'maturity')
+        fields = ('user', 'lei', 'isin', 'size', 'currency', 'maturity')
 
 
 class BondReadSerializer(serializers.ModelSerializer):

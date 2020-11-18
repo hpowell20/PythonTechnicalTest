@@ -16,8 +16,14 @@ class BondViewSet(AuthMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows bonds to be viewed or edited
     """
-    queryset = Bond.objects.all()
     filterset_fields = ['legal_name']
+
+    def get_queryset(self):
+        """
+        Return the list of bonds for the currently authenticated user
+        """
+        user = self.request.user
+        return Bond.objects.filter(user=user)
 
     def get_serializer_class(self, *args, **kwargs):
         serializer_class = BondReadSerializer
